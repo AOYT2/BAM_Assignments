@@ -1,0 +1,242 @@
+---
+title: "Assignment 1"
+output: html_document
+---
+
+Part 1: Load the packages
+```{r}
+library(ggplot2)
+library(liver)
+```
+Part 2: Load and summarize the "adult" dataset
+```{r}
+data(adult)
+
+str(adult)
+```
+As seen above, there are 15 variables and 48598 cases. The variables are either factors or integers. Categorical variables such as education and work class are factors. Integer variables like age and hours per week are integers.
+```{r}
+summary(adult)
+```
+The summary function reveals several missing values. There are 2794 cases with an unknown work class, 2804 cases with an unknown occupation and 847 cases with an unknown native country. As there are 15 variables with more than 40,000 cases, the unknown variables can be predicted using the existing data.
+
+There are 5 work classes and 41 countries listed as categories, hence the unknown cases can be assigned to these variables. The prediction method could be more useful for the workclass variable. The 5 listed categories cover every possible situation. However, the native country variable only has 41 countries. There is a chance that the participant is from an unlisted country. Hence, it can be argued that the missing values from the native.country variable should be kept unknown. The same could be said for the occupations, there are only 14 occupations listed, the unknown cases could have occupations which are not listed, could be kept as unknown.
+
+Part 3: Find correlations with the income variable
+
+For factor variables, bar charts were used to see correlations.
+```{r}
+ggplot( data = adult ) + 
+  geom_bar( aes( x = workclass, fill = income ))
+
+ggplot( data = adult ) + 
+  geom_bar( aes( x = workclass, fill = income ), position = "fill" )
+```
+
+Workclass: some correlation with Never-worked and Without pay earning less
+```{r}
+ggplot( data = adult ) + 
+  geom_bar( aes( x = education, fill = income ))
+
+ggplot( data = adult ) + 
+  geom_bar( aes( x = education, fill = income ), position = "fill" )
+```
+
+Education: some correlation with Doctorate, Masters and Prof-school graduates earning more, however there are very few cases of Doctorate and Prof-school graduates
+```{r}
+ggplot( data = adult ) + 
+  geom_bar( aes( x = marital.status, fill = income ))
+
+ggplot( data = adult ) + 
+  geom_bar( aes( x = marital.status, fill = income ), position = "fill" )
+```
+
+Marital.status: some correlation with Married people earning more
+```{r}
+ggplot( data = adult ) + 
+  geom_bar( aes( x = occupation, fill = income ))
+
+ggplot( data = adult ) + 
+  geom_bar( aes( x = occupation, fill = income ), position = "fill" )
+```
+
+Occupation: some correlation with Executive Managers and Prof-speciality earning more
+```{r}
+ggplot( data = adult ) + 
+  geom_bar( aes( x = relationship, fill = income ))
+
+ggplot( data = adult ) + 
+  geom_bar( aes( x = relationship, fill = income ), position = "fill" )
+```
+
+Relationship: some correlation with Husband and Wife earning more
+```{r}
+ggplot( data = adult ) + 
+  geom_bar( aes( x = race, fill = income ))
+
+ggplot( data = adult ) + 
+  geom_bar( aes( x = race, fill = income ), position = "fill" )
+```
+
+Race: some correlation with Asian-Pac-Islander and White earning more. It should be noted that there are very few Asian-Pac-Islander cases.
+```{r}
+ggplot( data = adult ) + 
+  geom_bar( aes( x = gender, fill = income ))
+
+ggplot( data = adult ) + 
+  geom_bar( aes( x = gender, fill = income ), position = "fill" )
+```
+
+Gender: clear correlation with Male earning more than Female
+```{r}
+ggplot( data = adult ) + 
+  geom_bar( aes( x = native.country, fill = income ))
+
+ggplot( data = adult ) + 
+  geom_bar( aes( x = native.country, fill = income ), position = "fill" )
+```
+
+Native.country: some correlation with several countries earning more and several countries earning less than others. Every country other than the United States have very few cases.
+
+**
+Correlation Summary for Factorial variables:
+The income level correlates with workclass, education, marital status, occupation, relationship, race, gender, and native country
+**
+
+Boxplots will be used to see correlations between income and integer variables
+
+```{r}
+ggplot( data = adult ) +
+  geom_boxplot( aes( x = income, y = age ) )
+```
+
+Age: higher age average for higher earning people the median of the "<=50K" group is lower than the 1st Quartile of the ">50K"
+```{r}
+ggplot( data = adult ) +
+  geom_boxplot( aes( x = income, y = demogweight ) )
+```
+
+Demogweight: no correlation
+```{r}
+ggplot( data = adult ) +
+  geom_boxplot( aes( x = income, y = education.num ) )
+```
+
+Education.num: higher earning people have a higher education number
+
+```{r}
+ggplot( data = adult ) +
+  geom_boxplot( aes( x = income, y = hours.per.week ) )
+```
+
+Hours.per.week: small correlation, the upper quartile is higher for cases with higher income, however the median are the same. Hence, cases with a higher hours.per.week have more income, but regardless of how much the income is, the median hours.per.week is 40.
+**
+Correlation Summary for Integer variables:
+The income level correlates with age and education.num
+**
+
+Part 4: Write a Summary
+
+Complete Summary:
+
+This analysis investigated the "adult" dataset from the "liver" package.
+
+Initially, the dataset was analyzed using the str() and summary() functions. The dataset has 15 variables with 48598 cases. 6 of these variables are integer and the remaining 9 are factors. The dataset gives information about certain individuals, mainly focusing on their demographic information and information about their occupation.
+
+Moreover, the missing values were searched for. From the 15 variables, (seen in the summary section) 3 variables had cases which had missing values.
+
+As stated in Part 2, the missing values in the variable "workclass" could be predicted through analyzing the cases' characteristics. However, the other missing values from the other variables could be left as unknown or missing. This is due to a higher likelihood of making errors while assigning those values.
+
+Part 3 focused on the income variable and its correlation with other variables.
+
+The following variables correlated with the income variable:
+
+**
+Factors
+**
+-workclass
+-education
+-marital.status
+-occupation
+-relationship
+-race
+-gender
+-native.country
+
+**
+Integers
+**
+-age
+-education.
+
+Overall, Never-worked and Without-pay  people have a lower income with Self-emp and Gov (workclass) people earning more. Executive Managers and Prof-speciatily people earn more money compared to other occupations (occupation).
+
+Also, Doctorate, Masters, and Prof-school graduates (education) have a higher income compared to other cases. Higher earning people have a higher education.num as well.
+
+Moreover, married people (marital.status) and people who are identified as husband and wife (relationship) earn more.
+
+Demographically, White and Asian-Pac-Islander (race) men (gender) have a higher income. The native country correlated with income. People from specific countries earn more than people from other countries (native.country). Finally, older people have a higher income (age).
+
+In conclusion, the income variable correlates with many of the other variables.
+
+
+
+Part 6: (Bonus) churnTel dataset
+
+```{r}
+data(churnTel)
+
+str(churnTel)
+
+summary(churnTel)
+```
+
+No missing values detected among the cases. There are 21 variables which contain 7032 cases. There are numeric, integer and factor variables.
+
+The summary gives information about the characteristics of the data.
+
+Also, below, a correlation chart is present to illustrate the relationship between the numeric and integer variables.
+
+
+```{r}
+library( GGally )  # To load "GGally" package 
+
+variable_list = c( "senior.citizen",  "phone.service", "tenure", "monthly.charge", "total.charge")
+
+ggcorr( data = churnTel[ , variable_list ] ) 
+
+```
+
+As seen above, "total.charge" strongly correlates with "monthly.charge" and "tenure".
+
+Below, there are several graphs about how similar variables correlate.
+
+```{r}
+ggplot( data = churnTel ) + 
+  geom_bar( aes( x = online.security, fill = online.backup ) )
+
+ggplot( data = churnTel ) + 
+  geom_bar( aes( x = phone.service, fill = internet.service ) )
+
+ggplot( data = churnTel ) + 
+  geom_bar( aes( x = streaming.movie, fill = streaming.TV ) )
+```
+
+These findings are very explanatory and expected. For example, if a customer is labeled "no-internet-service" in one category, they are labeled as "no-internet-service" in all relevant categories. Also, fiber-optic internet cables come from telephone lines, all fiber-optic internet users have a phone service.
+
+Finally, the relationship between payment related information and churn was analyzed below.
+
+```{r}
+ggplot( data = churnTel ) + 
+  geom_bar( aes( x = paperless.bill, fill = churn ), position = "fill" ) 
+
+ggplot( data = churnTel ) + 
+  geom_bar( aes( x = payment.method, fill = churn ), position = "fill" ) 
+
+ggplot( data = churnTel ) + 
+  geom_bar( aes( x = contract, fill = churn ), position = "fill" ) 
+```
+
+These graphs give insights about customer behavior. The churn rate correlates with the contact length significantly. Shorter contacts lead to higher churn rates. Also, the churn rate is very high in electronic checks compared to other payment methods. Finally, paperless bills have a higher churn rate as well.
+
+A company trying to decrease its churn rate should aim to give bills in papers, make the customers sign lengthier contracts and offer alternatives to electronic checks. Statistically these conditions correlate with the lowest churn rate.

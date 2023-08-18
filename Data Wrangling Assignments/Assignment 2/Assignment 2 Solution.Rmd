@@ -1,0 +1,178 @@
+---
+title: "Assignment 2 Solution"
+author: "Eran Kan Kohen"
+date: "10/10/2021"
+output: html_document
+---
+
+Importing libraries
+
+```{r, message=FALSE, warning=FALSE}
+library( rpart )         # For the "CART" algorithm
+library( rpart.plot )    # For ploting decition trees
+library( C50 )           # For the "C5.0" algorithm
+library( randomForest )  # For the "Random Forest" algorithm
+library( liver )         # For the "adult" dataset & the "partition" function
+library( pROC )          # For ROC plot using "plot.roc" function
+```
+
+**1. Importing Dataset & Summary**
+
+```{r}
+data(risk)
+str(risk)
+summary(risk)
+```
+
+There are 6 variables and 246 cases. 3 variables are factors and 2 are integers, and one is numerical. There aren't any missing values however there is a category named "other" under the "marital" variable. Cases which do not fall under the "single" or "married" classifications fall under "other". This isn't a missing value, but it should noted that this category is rather vague.
+
+The dataset also holds information about the person's age, income, mortgage status, and number of loans. Finally, there is a varible which states if the risk is good or bad.
+
+**2. Data Partitioning**
+
+```{r}
+set.seed( 39 )
+
+data_sets = partition( data = risk, prob = c( 0.8, 0.2 ) )
+
+train_set = data_sets $ part1
+test_set  = data_sets $ part2
+
+actual_test  = test_set $ risk
+```
+
+**3. Validating Partition**
+
+```{r}
+x1 = sum( train_set $ risk == "good risk" )
+x2 = sum( test_set  $ risk == "good risk")
+
+n1 = nrow( train_set )
+n2 = nrow( test_set  )
+
+prop.test( x = c( x1, x2 ), n = c( n1, n2 ) )
+```
+
+The partition is validated. The confidence intervals are -0.23 and 0.12. 0 is between the confidence intervals, meaning that the sample sums aren't significantly different from each other. This is justified by the p value which is greater than 0.05. Overall, it is clear that the partition was conducted properly and the train_set and the test_set carry the same characteristics.
+
+**4. Decision Tree & Random Forest Algorithm**
+
+**CART**
+
+```{r}
+formula = risk ~.
+
+tree_cart = rpart( formula = formula, data = train_set, method = "class" )
+
+print( tree_cart )
+
+rpart.plot( tree_cart, type = 4, extra = 104 )
+```
+
+**C50**
+
+```{r}
+tree_C50_small = C5.0( formula, data = train_set ) 
+
+plot( tree_C50_small )
+```
+
+**Random Forest**
+
+```{r}
+random_forest = randomForest( formula = formula, data = train_set, ntree = 10 )
+
+predict_random_forest = predict( random_forest, test_set )
+
+plot( predict_random_forest, actual_test )
+```
+
+Above, the plots for the CART, C50, and Random Forest models are present. The CART model shows the prediction ability of the income variable. The C50 model is more specific as there are 7 nodes and 8 leaves.
+
+The plot for the random forest shows the ratios of the cases which have a bad risk and good risk value. There is a 0.1 difference, indicating that the MSE value is probably going to be 0.10.
+
+The predict models for the CART and the C50 models are present in the form of the confusion matrices. The confusion matrices are present under the 6th part of this report.
+
+**5. kNN Algorithm**
+
+First, the optimum k value is determined using the following plot:
+
+```{r}
+kNN.plot( formula, train = train_set, test = test_set, transform = "minmax", 
+          k.max = 30, set.seed = 39 )
+```
+
+As seen above, the optimum k value is 1. Hence, it is set as the k value for the following operation.
+
+```{r}
+predict_knn  = kNN( formula, train = train_set, test = test_set, k = 1  )
+plot( predict_knn, actual_test )
+```
+
+Similar to the random forest algorithm, the plot reveals the ratios of the cases. Comparing the plots reveal that there is more total error in the kNN algorithm. There is almost a 0.2 difference between the good risk and bad risk bar charts. This indicates that there is going to be a MSE value close to 0.20 and the total error will be close to 20%.
+
+**6. Model Evaluation**
+
+**MSE Values & Confusion Matrices**
+
+```{r}
+tree_cart = rpart( formula = formula, data = train_set, method = "class" )
+
+predict_cart = predict( tree_cart, test_set, type = "class" )
+
+table( predict_cart, actual_test )
+( mse_cart = mse( predict_cart, actual_test ) )
+```
+
+The MSE value is 0.15, indicating a 15% error chance. There are 7 false predictions in the model, 5 false positives, and 2 false negatives. 
+
+```{r}
+tree_C50 = C5.0( formula = formula, data = train_set, type = "class" ) 
+
+predict_C50 = predict( tree_C50, test_set, type = "class" )
+table( predict_C50, actual_test )
+( mse_C50 = mse( predict_C50, actual_test ) )
+```
+
+The MSE value is 13, indicating a 13% error chance. There are 6 false predictions, 1 less than the CART model. There are 3 false positives and 3 false negatives. This model is better than the CART model, however it got more false negative predictions.
+
+```{r}
+table( predict_random_forest, actual_test )
+mse(   predict_random_forest, actual_test )
+```
+
+The MSE value for the random forest algorithm is 0.11. This aligns with the prediction made in part 4. It has the lowest error chance with 11% and the least false predictions with 5, 3 false positives and 2 false negatives. It has the most effective prediction model compared to the CART and the C50 algorithms.
+
+```{r}
+conf.mat( predict_knn, actual_test )
+MSE_knn = mse( predict_knn, actual_test  )
+MSE_knn
+```
+
+As predicted in part 5, the MSE value is 0.20. Thus, the error rate is 20%. The prediction model made 9 false predictions. This algorithm made the most errors and has the highest error rate compared to the other models.
+
+Solely looking at the confusion matrices and the MSE values, it can be stated that the random forest algorithm is the most effective for the current problem whereas the kNN algorithm is the least effective.
+
+**ROC Curves and AUC**
+
+```{r, message = F}
+prob_cart = predict( tree_cart, test_set, type = "prob" )[ , 1 ]
+prob_C50 = predict( tree_C50, test_set, type = "prob" )[ , 1 ]
+prob_random_forest = predict( random_forest, test_set, type = "prob" )[ , 1 ]
+
+
+plot.roc( actual_test, prob_cart, legacy.axes = T, col = "black", lwd = 2,
+          xlab = "False Positive Rate", ylab = "True Positive Rate", print.auc = T, print.auc.y = 0.45 )
+
+plot.roc( actual_test, prob_C50, legacy.axes = T, add = T, col = "red", print.auc = T, print.auc.y = 0.40 )
+plot.roc( actual_test, prob_random_forest, legacy.axes = T, add = T, col = "blue", print.auc = T, print.auc.y = 0.35 )
+
+```
+
+CART AUC = 0.841
+C50 AUC = 0.952
+Random Forest AUC = 0.967
+
+The ROC curves and the AUC values aligns with the MSE values perfectly. The Random Forest curve and the C50 curve goes completely over the CART algorithm's curve. This indicates that both algorithms are better than the CART algorithm. The Random Forest and the C50 have AUC values of 0.967 and 0.952, respectively. These high values show that both models are great at predicting the risk variable in the given dataset.
+
+As a conclusion, it can be said that both the C50 and the Random Forest algorithms' models work well with the data. However, the Random Forest has the least total error and is the most effective at predicting data. A consultant who is aiming to find the appropriate cases which will profit later (good risk) should use the Random Forest algorithm. They can also usse the C50 algorithm to cross-check.

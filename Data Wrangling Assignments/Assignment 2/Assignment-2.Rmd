@@ -1,0 +1,89 @@
+---
+title: "Assignment 2 - Machine Learning"
+output: pdf_document
+---
+
+### Credit Risk
+
+Credit Risk defines as the risk of default on a debt that may arise from a borrower failing to make required payments. The credit that companies offer to their clients has associated with the risk that the clients may not pay their invoices. Thus, risk classification can play an essential factor in many companies, such as banks and insurance companies. Companies using customers information to classify the risk of the new customers based on some algorithm such as the k-nearest neighbor algorithm or decision tree. There are two types of Credit risks:
+
+* **Good Risk**: An investment that one believes is likely to be profitable. The term most often refers to a loan made to a creditworthy person or company. Good risks are considered exceptionally likely to be repaid.
+
+* **Bad Risk**: A loan that is unlikely to be repaid because of bad credit history, insufficient income, or some other reason. A bad risk increases the risk to the lender and the likelihood of default on the part of the borrower.
+
+### Objective
+
+For this assignment, we want to classify the customers (based on their attributes) as either *good* or *bad* credit risk by using the real-world `risk` dataset. This dataset is available in the R package [`liver`](https://CRAN.R-project.org/package=liver). You could find more information about this dataset at the following link: [https://rdrr.io/cran/liver/man/risk.html](https://rdrr.io/cran/liver/man/risk.html). This dataset has 6 variables in which the variable *risk* is the target variable along with 5 predictors, *mortgage*, *number of loans*, *age*, *marital status*, and *income*. In the target variable, customers are classified as either “*good risk*” or “*bad risk*”. 
+
+**Your task** is to apply the following classification algorithms:
+
+* *CART* algorithm,
+* *C5.0* algorithm,
+* *Random Forest* algorithm,
+* *kNN* algorithm.
+
+Then, **you should recommend which of the above classification algorithms are more suitable here**, by evaluating the accuracy of the predictions with:
+
+* Confusion Matrix,
+* MSE,
+* ROC curve,
+* AUC (Area Under the ROC curve).
+
+For this task, answer the following questions and create a report as an **R-markdown** ( .Rmd file including R code). Please upload your **R-markdown** file with the **HTML** file on Canvas. The total number of points assigned is 100.
+
+### 1 Importing and understading the dataset (10 points)
+
+Import the `risk` dataset which is available in the [`liver`](https://CRAN.R-project.org/package=liver) package. Report a summary of the dataset by using appropriate R functions. What is the number of variables? Which type of variables are they? Are there any missing values? 
+
+### 2 Data Partitioning (10 points)
+
+Partition the dataset randomly into a training set (80%) and a test set (20%). You could use the `partition` function from the `liver` package.
+
+### 3 Validating the partition (10 points)
+
+The composition of the training and test data sets should be as similar as possible. Validate the partition by using appropriate hypothesis testing. For example, you could validate the partition for the target variable `risk`. 
+
+### 4 Applying Decision Tree and Random Forest (20 points)
+
+For the classification task, by using the training dataset, run the following algorithms:
+
+* *CART algorithm* using the `rpart` function in the **rpart** R package and plot the decision tree using the `rpart.plot` function in the **rpart.plot** R package; Similar to the exercises of week 5 in part 1.3.
+
+* *C5.0 algorithm* using the `C5.0` function in the R package **C50**; Similar to the exercises of week 5 in part 1.4.
+
+* *Random Forest* using the `randomForest` function from the R package **randomForest**; Similar to the exercises of week 5 in part 1.5.
+
+Based on the training dataset and the above models predict for the test set. For the prediction, you could use the `predict` function; Similar to the exercises of week 5 in part 1.6.
+
+### 5 Appling the KNN algorithm (15 points)
+
+Find the k-nearest neighbor for the test set, based on the training dataset. For this task, first, find out the optimal value of `k` based on MSE; Similar to the exercises of week 4.
+
+### 6 Model Evaluation (20 points) 
+
+Based on your results so far, which of the four classification algorithms is more suitable here for the *risk* dataset based on:
+
+* Confusion Matrix,
+* MSE,
+* ROC curve,
+* AUC (Area Under the ROC curve).
+
+### 7 Writing a report (15 points)
+
+Create a report as an R-markdown file which should include the R code and the result of the code beside your interpretation. 
+
+### 8 Bonus question (30 points)
+
+We want to apply the following classification algorithms:
+
+* *CART* algorithm,
+* *C5.0* algorithm,
+* *Random Forest* algorithm,
+* *kNN* algorithm,
+
+for analyzing the *bank* dataset which is available in the **R** package [**liver**](https://CRAN.R-project.org/package=liver). You could find more information about the *bank* dataset at the following link: [https://rdrr.io/cran/liver/man/bank.html](https://rdrr.io/cran/liver/man/bank.html). 
+
+In the weekly exercises of week 4, we applied the kNN algorithm for this dataset by using all the 19 predictors in this dataset. But we know, we should use only those predictors that have a relationship with the target variable. So, your task is first to find out which of those predictors in the dataset have a relationship with the target variable `deposit`. Then apply the above four classification algorithms by using only those predictors that have a relationship with the target variable. 
+
+$~$
+
